@@ -4,11 +4,11 @@ import Link from "next/link";
 const ProductCard = ({ product }) => {
   return (
     // We wrap the card in a Link to prepare for the dedicated product pages
-    <Link href={`/products/${product.slug}`} className="group">
+    <Link href={`/Products/${product.slug}`} className="group">
       <div className="bg-white rounded-lg overflow-hidden">
         <div className="relative h-100">
           <Image
-            src={product.imageUrl}
+            src={product.images[0]}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"

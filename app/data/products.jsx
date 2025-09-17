@@ -4,7 +4,11 @@ export const products = [
     name: "A2 Cow Ghee",
     slug: "a2-cow-ghee",
     price: 599.0,
-    imageUrl: "/ghee.jpg",
+    images: [
+      "/ghee.jpg", // Main image
+      "/ghee.jpg", // Thumbnail 1
+      "/ghee.jpg", // Thumbnail 2
+    ],
     availability: "In Stock",
     isFeatured: true,
     sales: 150, // Add sales count for "Best selling"
@@ -15,7 +19,11 @@ export const products = [
     name: "Cold Pressed Mustard Oil",
     slug: "cold-pressed-mustard-oil",
     price: 220.0,
-    imageUrl: "/mustard-oil.jpg",
+    images: [
+      "/mustard-oil.jpg", // Main image
+      "/mustard-oil.jpg", // Thumbnail 1
+      "/mustard-oil.jpg", // Thumbnail 2
+    ],
     availability: "Sold Out",
     isFeatured: true,
     sales: 95, // Add sales count

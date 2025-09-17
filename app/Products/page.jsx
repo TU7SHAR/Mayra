@@ -1,50 +1,38 @@
-"use client"; // This is now a client component
+"use client";
 
 import { useState, useEffect } from "react";
-import { products } from "@/app/data/products";
-import ProductCard from "@/app/components/ProductCard";
-import { useDetectOutsideClick } from "../hooks/useDetectOutsideClick";
+import { products } from "@/app/data/products"; // Corrected import path
+import ProductCard from "@/app/components/ProductCard"; // Corrected import path
+import { useDetectOutsideClick } from "@/app/hooks/useDetectOutsideClick"; // Corrected import path
 
 export default function ProductsPage() {
-  // --- STATE MANAGEMENT ---
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
   const [priceFilter, setPriceFilter] = useState({ from: "", to: "" });
-  const [sortOrder, setSortOrder] = useState("featured"); // ADDED: State for sorting
-
-  // MODIFIED: Use the custom hook for dropdown visibility
+  const [sortOrder, setSortOrder] = useState("featured");
   const availabilityDropdown = useDetectOutsideClick(false);
   const priceDropdown = useDetectOutsideClick(false);
   const sortDropdown = useDetectOutsideClick(false);
 
-  // --- FILTERING & SORTING LOGIC ---
   useEffect(() => {
     let tempProducts = [...products];
 
-    // 1. Filter by Availability (Your existing code)
     if (availabilityFilter.length > 0) {
       tempProducts = tempProducts.filter((product) =>
         availabilityFilter.includes(product.availability)
       );
     }
-
-    // 2. Filter by Price (Your existing code)
     const fromPrice = parseFloat(priceFilter.from);
     const toPrice = parseFloat(priceFilter.to);
-    if (!isNaN(fromPrice)) {
-      tempProducts = tempProducts.filter(
-        (product) => product.price >= fromPrice
-      );
-    }
-    if (!isNaN(toPrice)) {
-      tempProducts = tempProducts.filter((product) => product.price <= toPrice);
-    }
+    if (!isNaN(fromPrice))
+      tempProducts = tempProducts.filter((p) => p.price >= fromPrice);
+    if (!isNaN(toPrice))
+      tempProducts = tempProducts.filter((p) => p.price <= toPrice);
 
-    // ADDED: 3. Sort the filtered products
     switch (sortOrder) {
       case "featured":
         tempProducts.sort(
-          (a, b) => (b.isFeatured ? 1 : -1) - (a.isFeatured ? 1 : -1)
+          (a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0)
         );
         break;
       case "best-selling":
@@ -75,22 +63,25 @@ export default function ProductsPage() {
       default:
         break;
     }
-
     setFilteredProducts(tempProducts);
-  }, [availabilityFilter, priceFilter, sortOrder]); // MODIFIED: Added sortOrder to dependency array
+  }, [availabilityFilter, priceFilter, sortOrder]);
 
-  // --- EVENT HANDLERS ---
   const handleAvailabilityChange = (e) => {
-    // ... (Your existing code for this handler)
+    const { value, checked } = e.target;
+    if (checked) {
+      setAvailabilityFilter([...availabilityFilter, value]);
+    } else {
+      setAvailabilityFilter(
+        availabilityFilter.filter((item) => item !== value)
+      );
+    }
   };
 
-  // ADDED: Handler for changing the sort order
   const handleSortChange = (sortValue) => {
     setSortOrder(sortValue);
-    sortDropdown.setIsActive(false); // Close dropdown on selection
+    sortDropdown.setIsActive(false);
   };
 
-  // ADDED: Helper object for displaying sort option names
   const sortOptions = {
     featured: "Featured",
     "best-selling": "Best selling",
@@ -101,17 +92,12 @@ export default function ProductsPage() {
     "date-new": "Date, new to old",
     "date-old": "Date, old to new",
   };
-  // ... (all the code from the top of your file is correct)
-
-  // ... (all the code at the top of your file is correct)
 
   return (
     <div className="bg-gray-50 py-12 min-h-screen">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-8">Products</h1>
-
-        {/* --- Filter & Sort Controls --- */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-8">
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Filter:</span>
 
@@ -128,6 +114,7 @@ export default function ProductsPage() {
                   ref={availabilityDropdown.nodeRef}
                   className="absolute top-full left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10 p-4"
                 >
+                  {/* --- CONTENT RESTORED --- */}
                   <div className="flex justify-between items-center mb-2">
                     <span>{availabilityFilter.length} selected</span>
                     <button
@@ -172,6 +159,7 @@ export default function ProductsPage() {
                   ref={priceDropdown.nodeRef}
                   className="absolute top-full left-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-10 p-4"
                 >
+                  {/* --- CONTENT RESTORED --- */}
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs text-gray-500">
                       The highest price is Rs. 2,999.00
@@ -246,7 +234,7 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* --- Product Grid --- */}
+        {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
