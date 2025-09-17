@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 const Hero = () => {
@@ -17,7 +18,7 @@ const Hero = () => {
           Browse our latest products
         </h1>
         <button className="bg-yellow-800 text-white text-2xl font-light py-2 px-6 rounded hover:bg-yellow-900 transition duration-300">
-          Shop all
+          <Link href="/Products">Shop All</Link>
         </button>
       </div>
     </div>
