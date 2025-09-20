@@ -1,27 +1,27 @@
 "use client";
 
+import { signIn } from "next-auth/react"; // Import from next-auth/react
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const [step, setStep] = useState("email"); // 'email' or 'otp'
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [message, setMessage] = useState(""); // To give user feedback
 
-  const handleContinue = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add backend logic here to send OTP to the user's email
-    console.log(`Sending OTP to ${email}...`);
-    setStep("otp"); // Move to the next step
-  };
-
-  const handleVerify = (e) => {
-    e.preventDefault();
-    // TODO: Add backend logic here to verify the OTP
-    console.log(`Verifying OTP ${otp} for email ${email}...`);
-    // On success, you would redirect the user:
-    // router.push('/dashboard');
+    setMessage("Sending your sign-in link...");
+    try {
+      // This calls the NextAuth backend we just created
+      await signIn("resend", { email, redirect: false });
+      setMessage(
+        `A sign-in link has been sent to ${email}. Please check your inbox.`
+      );
+    } catch (error) {
+      setMessage("An error occurred. Please try again.");
+      console.error("Sign in error", error);
+    }
   };
 
   return (
@@ -31,82 +31,45 @@ export default function LoginPage() {
           <Image src="/logo.png" alt="Myara Logo" width={60} height={60} />
         </div>
 
-        {step === "email" && (
-          <form onSubmit={handleContinue}>
-            <h1 className="text-2xl font-bold text-center mb-2">Sign in</h1>
-            <p className="text-gray-600 text-center mb-6">
-              Enter your email and we’ll send you a verification code
-            </p>
-            <div className="mb-4">
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-[#5B4729] text-white py-2 rounded-md hover:bg-[#5B4700] transition duration-300"
-            >
-              Continue
-            </button>
-            <div className="text-center mt-4">
-              <Link
-                href="/privacy"
-                className="text-sm text-gray-500 hover:underline"
-              >
-                Privacy policy
-              </Link>
-            </div>
-          </form>
-        )}
+        <form onSubmit={handleSubmit}>
+          <h1 className="text-2xl font-bold text-center mb-2">Sign in</h1>
+          <p className="text-gray-600 text-center mb-6">
+            Enter your email to receive a secure sign-in link
+          </p>
+          <div className="mb-4">
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#5B4729]"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-[#5B4729] text-white py-2 rounded-md hover:bg-[#8A7256] transition duration-300"
+          >
+            Continue with Email
+          </button>
 
-        {step === "otp" && (
-          <form onSubmit={handleVerify}>
-            <h1 className="text-2xl font-bold text-center mb-2">
-              Check your email
-            </h1>
-            <p className="text-gray-600 text-center mb-6">
-              A 6-digit code has been sent to <br /> <strong>{email}</strong>
-            </p>
-            <div className="mb-4">
-              <label htmlFor="otp" className="sr-only">
-                Verification Code
-              </label>
-              <input
-                type="text"
-                id="otp"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="6-digit code"
-                required
-                maxLength={6}
-                className="w-full px-4 py-2 border rounded-md text-center tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
+          {message && (
+            <p className="text-center text-sm text-gray-600 mt-4">{message}</p>
+          )}
+
+          <div className="text-center mt-4">
+            <Link
+              href="/privacy"
+              className="text-sm text-gray-500 hover:underline"
             >
-              Verify
-            </button>
-            <div className="text-center mt-4">
-              <button
-                onClick={() => setStep("email")}
-                className="text-sm text-gray-500 hover:underline"
-              >
-                Use a different email
-              </button>
-            </div>
-          </form>
-        )}
+              Privacy policy
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );

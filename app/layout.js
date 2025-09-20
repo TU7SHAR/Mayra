@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Subscription from "./components/Subscription";
 import { CartProvider } from "./context/CartContext";
+import AuthProvider from "./components/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,12 +27,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CartProvider>
-          <Header />
-          <main>{children}</main> {/* Page content will be injected here */}
-          <Subscription />
-          <Footer />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Header />
+            <main>{children}</main> {/* Page content will be injected here */}
+            <Subscription />
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
