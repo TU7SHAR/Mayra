@@ -1,16 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null); // State to hold user session
+  const [isLoading, setIsLoading] = useState(true); // To handle loading state
+
   const pathname = usePathname();
+  const router = useRouter();
   const { itemCount } = useCart();
 
+  // Fetch the user session when the component loads or the route changes
+  useEffect(() => {
+    async function fetchSession() {
+      // Don't re-fetch when the menu is toggled, only on navigation
+      setIsLoading(true);
+      const res = await fetch("/api/session");
+      if (res.ok) {
+        const data = await res.json();
+        // Check if the session is active
+        if (data.isLoggedIn) {
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      }
+      setIsLoading(false);
+    }
+    fetchSession();
+  }, [pathname]);
+
+  // Function to handle user logout
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    setUser(null); // Clear the user state locally
+    router.push("/"); // Redirect to home after logout
+    router.refresh(); // Refresh to ensure server components also update
+  };
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/Products" },
@@ -99,13 +130,43 @@ const Header = () => {
 
         {/* Right Column: Icons */}
         <div className="flex justify-end items-center space-x-4">
+          {/* Conditionally render Login or User Info/Logout */}
+          {!isLoading &&
+            (user ? (
+              <div className="flex items-center space-x-2">
+                <p className="text-sm text-gray-600 hidden sm:block">
+                  {user.email}
+                </p>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm font-semibold text-gray-700 hover:text-red-600"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/Login" className="text-gray-600 hover:text-gray-900">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </Link>
+            ))}
+
           <Link
             href="/Cart"
             className="relative text-gray-600 hover:text-gray-900"
           >
-            {/* Cart Icon SVG */}
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
@@ -123,22 +184,6 @@ const Header = () => {
                 {itemCount}
               </span>
             )}
-          </Link>
-          <Link href="/Login" className="text-gray-600 hover:text-gray-900">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
           </Link>
         </div>
       </div>
