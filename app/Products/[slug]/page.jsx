@@ -4,10 +4,12 @@ import { useState, use, useEffect } from "react";
 import { products } from "@/app/data/products";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
   const product = products.find((p) => p.slug === resolvedParams.slug);
+  const { addToCart } = useCart();
 
   if (!product) {
     notFound();
@@ -34,9 +36,7 @@ export default function ProductDetailPage({ params }) {
       alert("Please select a size/variant.");
       return;
     }
-    console.log(
-      `Added ${quantity} of ${product.name} (${selectedVariant.name}) to cart!`
-    );
+    addToCart(product, selectedVariant, quantity);
     alert(
       `Added ${quantity} of ${product.name} (${selectedVariant.name}) to cart!`
     );
