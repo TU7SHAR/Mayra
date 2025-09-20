@@ -53,7 +53,7 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
+              className="w-full bg-[#5B4729] text-white py-2 rounded-md hover:bg-[#5B4700] transition duration-300"
             >
               Continue
             </button>
