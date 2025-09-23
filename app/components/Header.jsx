@@ -45,7 +45,7 @@ const Header = () => {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/Products" },
-    { name: "Contact", href: "http://wa.me/+919780400311" },
+    { name: "Contact", href: "http://wa.me/+918053173029" },
   ];
 
   return (

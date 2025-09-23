@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function CheckoutPage() {
-  const { cartItems, discount } = useCart();
+  const { cartItems, discount, clearCart } = useCart();
   const router = useRouter();
 
   // State for form inputs
@@ -20,13 +20,64 @@ export default function CheckoutPage() {
     pinCode: "",
     phone: "",
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   // Redirect user if their cart is empty
   useEffect(() => {
-    if (cartItems.length === 0) {
-      router.push("/cart");
+    if (!isLoading && cartItems.length === 0) {
+      if (cartItems.length === 0) {
+        router.push("/Cart");
+      }
     }
-  }, [cartItems, router]);
+  }, [cartItems, router, isLoading]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // 1. Create an order on your backend
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ finalTotal }),
+      });
+      const { order } = await res.json();
+
+      // 2. Configure Razorpay options
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Myara Organics",
+        description: "Thank you for your purchase",
+        order_id: order.id,
+        handler: function (response) {
+          console.log("Payment successful:", response);
+          clearCart(); // Empty the cart on successful payment
+          router.push("/payment/success"); // Redirect to a success page
+        },
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: { color: "#5B4729" },
+      };
+
+      // 3. Open the Razorpay checkout modal
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+      rzp.on("payment.failed", function (response) {
+        alert(response.error.description);
+        setIsLoading(false);
+      });
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Failed to initiate checkout. Please try again.");
+      setIsLoading(false);
+    }
+  };
 
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -37,13 +88,6 @@ export default function CheckoutPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here we would proceed to payment (the Razorpay step)
-    console.log("Form submitted, proceeding to payment with:", formData);
-    alert("Next step: Payment Gateway!");
   };
 
   return (
@@ -183,7 +227,7 @@ export default function CheckoutPage() {
             <div className="border-t mt-6 pt-6">
               <div className="flex justify-between text-xl font-bold mt-4 border-t pt-4">
                 <p>Total</p>
-                <p>Rs. {finalTotal.toFixed(2)}</p>
+                <p>Rs. {cartTotal.toFixed(2)}</p>
               </div>
               {discount.amount > 0 && (
                 <div className="flex justify-between text-lg mt-2 text-green-600">
@@ -197,7 +241,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-xl font-bold mt-4 border-t pt-4">
                 <p>Total</p>
-                <p>Rs. {cartTotal.toFixed(2)}</p>
+                <p>Rs. {finalTotal.toFixed(2)}</p>
               </div>
             </div>
           </div>

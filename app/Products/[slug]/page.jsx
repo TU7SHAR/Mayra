@@ -6,6 +6,27 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 
+export async function generateMetadata({ params }) {
+  const product = products.find((p) => p.slug === params.slug);
+  if (!product) return { title: "Product not found" };
+
+  return {
+    title: product.name,
+    description: product.description, // Use the description from your data file
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [
+        {
+          url: `https://myaraorganics.com${product.images[0]}`, // Use the main product image
+          width: 800,
+          height: 600,
+        },
+      ],
+    },
+  };
+}
+
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
   const product = products.find((p) => p.slug === resolvedParams.slug);

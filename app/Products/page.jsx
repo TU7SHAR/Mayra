@@ -5,6 +5,12 @@ import { products } from "@/app/data/products"; // Corrected import path
 import ProductCard from "@/app/components/ProductCard"; // Corrected import path
 import { useDetectOutsideClick } from "@/app/hooks/useDetectOutsideClick"; // Corrected import path
 
+export const metadata = {
+  title: "All Products",
+  description:
+    "Browse our complete collection of A2 Cow Ghee, cold-pressed oils, and other authentic organic products.",
+};
+
 export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
@@ -65,7 +71,6 @@ export default function ProductsPage() {
     }
     setFilteredProducts(tempProducts);
   }, [availabilityFilter, priceFilter, sortOrder]);
-
   const handleAvailabilityChange = (e) => {
     const { value, checked } = e.target;
     if (checked) {
