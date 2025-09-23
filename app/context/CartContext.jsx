@@ -10,6 +10,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [discount, setDiscount] = useState({ code: "", amount: 0 });
 
   useEffect(() => {
     const items = localStorage.getItem("cartItems");
@@ -18,7 +19,6 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     if (cartItems.length >= 0) {
-      // Should update even when cart is empty
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }
   }, [cartItems]);
@@ -65,14 +65,49 @@ export const CartProvider = ({ children }) => {
       )
     );
   };
+  const clearCart = () => {
+    setCartItems([]);
+  };
+  const applyDiscount = (code) => {
+    // In a real app, you'd fetch this from a backend. For now, we'll hardcode them.
+    const DISCOUNTS = {
+      MYARA10: { type: "percentage", value: 10 }, // 10% off
+      FLAT50: { type: "fixed", value: 50 }, // Flat Rs. 50 off
+    };
+
+    const foundDiscount = DISCOUNTS[code.toUpperCase()];
+
+    if (foundDiscount) {
+      const cartTotal = cartItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
+      let discountAmount = 0;
+      if (foundDiscount.type === "percentage") {
+        discountAmount = (cartTotal * foundDiscount.value) / 100;
+      } else {
+        discountAmount = foundDiscount.value;
+      }
+      setDiscount({ code: code.toUpperCase(), amount: discountAmount });
+      return {
+        success: true,
+        message: `Discount "${code.toUpperCase()}" applied!`,
+      };
+    } else {
+      setDiscount({ code: "", amount: 0 }); // Reset if code is invalid
+      return { success: false, message: "Invalid discount code." };
+    }
+  };
 
   const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-
   const value = {
     cartItems,
+    discount, // NEW: Expose discount state
     addToCart,
     removeFromCart,
     updateQuantity,
+    clearCart,
+    applyDiscount, // NEW: Expose applyDiscount function
     itemCount,
   };
 

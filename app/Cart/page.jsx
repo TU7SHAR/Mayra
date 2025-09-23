@@ -1,5 +1,5 @@
 "use client";
-
+import { react, useState } from "react";
 import { useCart } from "@/app/context/CartContext";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,12 +7,21 @@ import { products } from "@/app/data/products";
 import ProductCard from "@/app/components/ProductCard";
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, discount, applyDiscount, removeFromCart, updateQuantity } =
+    useCart();
+
+  const [discountInput, setDiscountInput] = useState("");
+  const [discountMessage, setDiscountMessage] = useState("");
+
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-
+  const finalTotal = cartTotal - discount.amount;
+  const handleApplyDiscount = () => {
+    const result = applyDiscount(discountInput);
+    setDiscountMessage(result.message);
+  };
   if (cartItems.length === 0) {
     const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 3);
     return (
@@ -125,6 +134,27 @@ export default function CartPage() {
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm h-fit">
           <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+          <div className="flex gap-2 mb-4">
+            <input
+              type="text"
+              value={discountInput}
+              onChange={(e) => setDiscountInput(e.target.value)}
+              placeholder="Discount code"
+              className="w-full p-2 border rounded-md"
+            />
+            <button
+              onClick={handleApplyDiscount}
+              className="bg-[#5B4729] text-white px-4 rounded-md hover:bg-gray-300 whitespace-nowrap"
+            >
+              Apply
+            </button>
+          </div>{" "}
+          {discount.amount > 0 && (
+            <div className="flex justify-between mb-2 text-green-600">
+              <span>Discount ({discount.code})</span>
+              <span>- Rs. {discount.amount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between mb-2">
             <span>Subtotal</span>
             <span>Rs. {cartTotal.toFixed(2)}</span>
@@ -135,10 +165,10 @@ export default function CartPage() {
           </div>
           <div className="border-t pt-4 flex justify-between font-bold text-lg">
             <span>Total</span>
-            <span>Rs. {cartTotal.toFixed(2)}</span>
+            <span>Rs. {finalTotal.toFixed(2)}</span>
           </div>
           <button className="w-full bg-[#5B4729] text-white py-3 mt-6 rounded-lg hover:bg-[#8A7256] transition">
-            Proceed to Checkout
+            <Link href="/Checkout">Proceed to Checkout</Link>
           </button>
         </div>
       </div>
