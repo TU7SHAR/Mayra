@@ -167,9 +167,11 @@ export default function CartPage() {
             <span>Total</span>
             <span>Rs. {finalTotal.toFixed(2)}</span>
           </div>
-          <button className="w-full bg-[#5B4729] text-white py-3 mt-6 rounded-lg hover:bg-[#8A7256] transition">
-            <Link href="/Checkout">Proceed to Checkout</Link>
-          </button>
+          <Link href="/Checkout">
+            <button className="w-full bg-[#5B4729] text-white py-3 mt-6 rounded-lg hover:bg-[#8A7256] transition">
+              Proceed to Checkout
+            </button>
+          </Link>
         </div>
       </div>
     </div>
