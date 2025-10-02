@@ -46,6 +46,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      <meta
+        name="google-site-verification"
+        content="MtxKjMHFdP0iY78llqtcx-jCC17jQTuFH6jDVkJRXsY"
+      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
