@@ -1,4 +1,4 @@
-import { products } from "@/data/products";
+import { products } from "../../app/data/products";
 import ProductPageClient from "./ProductPageClient"; // 1. Import your new client component
 
 export const metadata = {
@@ -8,6 +8,5 @@ export const metadata = {
 };
 
 export default function ProductsPage() {
-  const initialProducts = products;
-  return <ProductPageClient initialProducts={initialProducts} />;
+  return <ProductPageClient initialProducts={products} />;
 }

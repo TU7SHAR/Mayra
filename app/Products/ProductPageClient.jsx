@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ProductCard from "@/components/ProductCard";
-import { useDetectOutsideClick } from "@/hooks/useDetectOutsideClick";
+import ProductCard from "../components/ProductCard";
+import { useDetectOutsideClick } from "../hooks/useDetectOutsideClick";
 
-export default function ProductsPageClient() {
+export default function ProductsPageClient({ initialProducts }) {
+  const products = initialProducts;
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
   const [priceFilter, setPriceFilter] = useState({ from: "", to: "" });

@@ -1,10 +1,10 @@
 "use client";
 import { react, useState } from "react";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "../context/CartContext";
 import Link from "next/link";
 import Image from "next/image";
-import { products } from "@/app/data/products";
-import ProductCard from "@/app/components/ProductCard";
+import { products } from "../data/products";
+import ProductCard from "../components/ProductCard";
 
 export default function CartPage() {
   const { cartItems, discount, applyDiscount, removeFromCart, updateQuantity } =
