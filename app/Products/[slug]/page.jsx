@@ -15,5 +15,7 @@ export default function ProductDetailPage({ params }) {
   const product = products.find((p) => p.slug === params.slug);
   if (!product) notFound();
 
-  return <ProductDetailClient product={product} />;
+  return <>  
+  <ProductDetailClient product={product} />;
+  </>
 }
